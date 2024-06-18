@@ -18,7 +18,7 @@ from ZelzalMusic.plugins import ALL_MODULES
 from ZelzalMusic.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
 
-# استيراد إعدادات البروكسي
+
 http_proxy = os.getenv('FIXIE_SOCKS5_HOST')
 https_proxy = os.getenv('FIXIE_SOCKS5_HOST')
 
