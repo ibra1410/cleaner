@@ -19,12 +19,12 @@ from ZelzalMusic.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
 
 
-http_proxy = os.getenv('FIXIE_SOCKS5_HOST')
-https_proxy = os.getenv('FIXIE_SOCKS5_HOST')
+http_proxy = os.getenv('FIXIE_SOCKS_HOST')
+https_proxy = os.getenv('FIXIE_SOCKS_HOST')
 
 proxies = {
-    'http': f'socks5://{http_proxy}',
-    'https': f'socks5://{https_proxy}',
+    'http': f'socks://{http_proxy}',
+    'https': f'socks://{https_proxy}',
 }
 
 async def init():
