@@ -227,6 +227,7 @@ class YouTubeAPI:
         return title, duration_min, thumbnail, vidid
 
 import aiohttp
+FIXIE_URL = os.environ.get('FIXIE_URL', '')
 
     async def download(
         self,
