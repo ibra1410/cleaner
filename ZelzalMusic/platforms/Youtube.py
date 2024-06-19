@@ -67,30 +67,13 @@ class YouTubeAPI:
             return None
         return text[offset : offset + length]
 
-import os
-import aiohttp
-from youtubesearchpython import VideosSearch
-
-FIXIE_SOCKS_HOST = os.environ.get('FIXIE_SOCKS_HOST')
-
-async def fetch_data(session, url, proxy):
-    async with session.get(url, proxy=proxy) as response:
-        return await response.json()
-
-async def details(self, link: str, videoid: Union[bool, str] = None):
-    if videoid:
-        link = self.base + link
-    if "&" in link:
-        link = link.split("&")[0]
-    
-    proxy = f"socks5://{FIXIE_SOCKS_HOST}" if FIXIE_SOCKS_HOST else None
-
-    async with aiohttp.ClientSession() as session:
+    async def details(self, link: str, videoid: Union[bool, str] = None):
+        if videoid:
+            link = self.base + link
+        if "&" in link:
+            link = link.split("&")[0]
         results = VideosSearch(link, limit=1)
-        # Perform the actual request using aiohttp
-        data = await fetch_data(session, results.url, proxy)
-
-        for result in data["result"]:
+        for result in (await results.next())["result"]:
             title = result["title"]
             duration_min = result["duration"]
             thumbnail = result["thumbnails"][0]["url"].split("?")[0]
