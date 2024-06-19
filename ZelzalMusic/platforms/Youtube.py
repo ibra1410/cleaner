@@ -67,22 +67,33 @@ class YouTubeAPI:
             return None
         return text[offset : offset + length]
 
-    async def details(self, link: str, videoid: Union[bool, str] = None):
-        if videoid:
-            link = self.base + link
-        if "&" in link:
-            link = link.split("&")[0]
-        results = VideosSearch(link, limit=1)
-        for result in (await results.next())["result"]:
-            title = result["title"]
-            duration_min = result["duration"]
-            thumbnail = result["thumbnails"][0]["url"].split("?")[0]
-            vidid = result["id"]
-            if str(duration_min) == "None":
-                duration_sec = 0
-            else:
-                duration_sec = int(time_to_seconds(duration_min))
-        return title, duration_min, duration_sec, thumbnail, vidid
+    import os
+import aiohttp
+from youtubesearchpython import VideosSearch
+
+FIXIE_SOCKS_HOST = os.environ.get('FIXIE_SOCKS_HOST')
+
+async def details(self, link: str, videoid: Union[bool, str] = None):
+    if videoid:
+        link = self.base + link
+    if "&" in link:
+        link = link.split("&")[0]
+    
+    proxy = f"socks5://{FIXIE_SOCKS_HOST}" if FIXIE_SOCKS_HOST else None
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(link, proxy=proxy) as response:
+            results = VideosSearch(link, limit=1)
+            for result in (await results.next())["result"]:
+                title = result["title"]
+                duration_min = result["duration"]
+                thumbnail = result["thumbnails"][0]["url"].split("?")[0]
+                vidid = result["id"]
+                if str(duration_min) == "None":
+                    duration_sec = 0
+                else:
+                    duration_sec = int(time_to_seconds(duration_min))
+            return title, duration_min, duration_sec, thumbnail, vidid
 
     async def title(self, link: str, videoid: Union[bool, str] = None):
         if videoid:
