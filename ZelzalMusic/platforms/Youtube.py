@@ -2,7 +2,7 @@ import asyncio
 import os
 import re
 from typing import Union
-
+import aiohttp
 import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
@@ -29,7 +29,7 @@ async def shell_cmd(cmd):
 
 class YouTubeAPI:
     def __init__(self):
-        self.base = "https://www.youtube.com"
+        self.base = "https://www.youtube.com/watch?v="
         self.regex = r"(?:youtube\.com|youtu\.be)"
         self.status = "https://www.youtube.com/oembed?url="
         self.listbase = "https://youtube.com/playlist?list="
