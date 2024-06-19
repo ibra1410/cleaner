@@ -227,8 +227,13 @@ class YouTubeAPI:
         return title, duration_min, thumbnail, vidid
 
 import aiohttp
+import os
+import asyncio
+from typing import Union
+
 FIXIE_URL = os.environ.get('FIXIE_URL', '')
 
+class YourClass:
     async def download(
         self,
         link: str,
@@ -239,7 +244,7 @@ FIXIE_URL = os.environ.get('FIXIE_URL', '')
         songvideo: Union[bool, str] = None,
         format_id: Union[bool, str] = None,
         title: Union[bool, str] = None,
-    ) -> str:
+    ) -> Union[str, tuple]:
         if videoid:
             link = self.base + link
         loop = asyncio.get_running_loop()
