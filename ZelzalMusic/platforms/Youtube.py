@@ -233,7 +233,6 @@ from typing import Union
 
 FIXIE_URL = os.environ.get('FIXIE_URL', '')
 
-class YourClass:
     async def download(
         self,
         link: str,
