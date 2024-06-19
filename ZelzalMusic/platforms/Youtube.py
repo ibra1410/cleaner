@@ -249,40 +249,47 @@ class YourClass:
             link = self.base + link
         loop = asyncio.get_running_loop()
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(link, proxy=FIXIE_URL) as response:
-                if response.status == 200:
-                    if songvideo:
-                        await loop.run_in_executor(None, song_video_dl)
-                        fpath = f"downloads/{title}.mp4"
-                        return fpath
-                    elif songaudio:
-                        await loop.run_in_executor(None, song_audio_dl)
-                        fpath = f"downloads/{title}.mp3"
-                        return fpath
-                    elif video:
-                        if await is_on_off(1):
-                            direct = True
-                            downloaded_file = await loop.run_in_executor(None, video_dl)
-                        else:
-                            proc = await asyncio.create_subprocess_exec(
-                                "yt-dlp",
-                                "-g",
-                                "-f",
-                                "best[height<=?720][width<=?1280]",
-                                f"{link}",
-                                stdout=asyncio.subprocess.PIPE,
-                                stderr=asyncio.subprocess.PIPE,
-                            )
-                            stdout, stderr = await proc.communicate()
-                            if stdout:
-                                downloaded_file = stdout.decode().split("\n")[0]
-                                direct = None
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(link, proxy=FIXIE_URL) as response:
+                    if response.status == 200:
+                        if songvideo:
+                            await loop.run_in_executor(None, song_video_dl)
+                            fpath = f"downloads/{title}.mp4"
+                            return fpath
+                        elif songaudio:
+                            await loop.run_in_executor(None, song_audio_dl)
+                            fpath = f"downloads/{title}.mp3"
+                            return fpath
+                        elif video:
+                            if await is_on_off(1):
+                                direct = True
+                                downloaded_file = await loop.run_in_executor(None, video_dl)
                             else:
-                                return
+                                proc = await asyncio.create_subprocess_exec(
+                                    "yt-dlp",
+                                    "-g",
+                                    "-f",
+                                    "best[height<=?720][width<=?1280]",
+                                    f"{link}",
+                                    stdout=asyncio.subprocess.PIPE,
+                                    stderr=asyncio.subprocess.PIPE,
+                                )
+                                stdout, stderr = await proc.communicate()
+                                if stdout:
+                                    downloaded_file = stdout.decode().split("\n")[0]
+                                    direct = None
+                                else:
+                                    return
+                        else:
+                            direct = True
+                            downloaded_file = await loop.run_in_executor(None, audio_dl)
+                        return downloaded_file, direct
                     else:
-                        direct = True
-                        downloaded_file = await loop.run_in_executor(None, audio_dl)
-                    return downloaded_file, direct
-                else:
-                    return f"Failed to download: {response.status}"
+                        return f"فشل في تحميل: {response.status}"
+        except aiohttp.ClientConnectionError as e:
+            print(f"خطأ في الاتصال بالسيرفر: {e}")
+        except aiohttp.ClientResponseError as e:
+            print(f"خطأ في الاستجابة من السيرفر: {e}")
+        except Exception as e:
+            print(f"حدث خطأ غير متوقع: {e}")
