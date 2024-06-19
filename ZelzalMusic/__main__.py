@@ -1,5 +1,7 @@
 import asyncio
 import importlib
+import os
+import aiohttp
 
 from pyrogram import idle
 from pytgcalls.exceptions import NoActiveGroupCall
@@ -11,6 +13,15 @@ from ZelzalMusic.misc import sudo
 from ZelzalMusic.plugins import ALL_MODULES
 from ZelzalMusic.utils.database import get_banned_users, get_gbanned
 from config import BANNED_USERS
+
+
+FIXIE_URL = os.environ.get('FIXIE_URL', '')
+
+
+async def fetch_with_proxy(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, proxy=FIXIE_URL) as response:
+            return await response.text()
 
 
 async def init():
@@ -48,6 +59,12 @@ async def init():
         exit()
     except:
         pass
+    
+
+    url = 'https://api.ipify.org?format=json'
+    content = await fetch_with_proxy(url)
+    print(content)
+    
     await Zelzaly.decorators()
     LOGGER("ZelzalMusic").info(
         "\x5a\x65\x6c\x7a\x61\x6c\x20\x4d\x75\x73\x69\x63\x20\x42\x6f\x74\x20\x53\x74\x61\x72\x74\x65\x64\x20\x53\x75\x63\x63\x65\x73\x73\x66\x75\x6c\x6c\x79\x2e\x0a\x0a\x44\x6f\x6e\x27\x74\x20\x66\x6f\x72\x67\x65\x74\x20\x74\x6f\x20\x76\x69\x73\x69\x74\x20\x40\x5a\x54\x68\x6f\x6e"
@@ -56,7 +73,6 @@ async def init():
     await app.stop()
     await userbot.stop()
     LOGGER("ZelzalMusic").info("Stopping Zelzal Music Bot...")
-
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(init())
